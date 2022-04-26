@@ -2,7 +2,7 @@
   "name": "user_management",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "start": "node app",
     "dev": "nodemon app"
@@ -13,9 +13,11 @@
   "type": "module",
   "dependencies": {
     "bcrypt": "^5.0.1",
+    "commander": "^7.2.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^5.0.0-beta.1",
+    "inquirer": "^8.2.2",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.2.4",
     "nodemailer": "^6.7.2"

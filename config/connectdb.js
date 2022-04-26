@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import UserModel from "../models/user.js";
 const connectDB = async(DATABASE_URL) => {
     try{
         const DB_OPTIONS = {
@@ -10,4 +11,4 @@ const connectDB = async(DATABASE_URL) => {
         console.log(error)
     }
 }
-export default connectDB
+export default connectDB;
