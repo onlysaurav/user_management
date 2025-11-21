@@ -1,9 +1,11 @@
 import request from "supertest";
 import app from "../app.js";
 import mongoose from "mongoose";
+const mongoUri = process.env.MONGO_URL || 'mongodb+srv://heroviredsaurabh1325_db_user:a0FwrpO4DbJL2ZGp@heroviredsaurabhcluster.o7yzksc.mongodb.net/User_Db';
+await mongoose.connect(mongoUri);
 
 beforeAll(async () => {
-  await mongoose.connect(process.env.MONGO_URL);
+  await mongoose.connect(mongoUri);
 });
 
 afterAll(async () => {
