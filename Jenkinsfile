@@ -40,7 +40,7 @@ pipeline {
             steps {
                 script {
                     sh """
-                        ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_IP} "mkdir -p ${EC2_PATH}"
+                        ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_IP} "mkdir -p ${EC2_PATH} && sudo chown -R ec2-user:ec2-user /var/www/userapp"
 
                         scp -o StrictHostKeyChecking=no -r * ${EC2_USER}@${EC2_IP}:${EC2_PATH}
 
