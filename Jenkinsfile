@@ -1,16 +1,15 @@
 pipeline {
     agent any
-    
-
-    triggers {
-        pollSCM('* * * * *')
-    }
 
     environment {
         PATH = "/opt/homebrew/opt/node@20/bin:${PATH}"
         EC2_USER = "ec2-user"
         EC2_IP = "18.169.105.246"
         EC2_PATH = "/var/www/userapp"
+    }
+
+    triggers {
+        pollSCM('* * * * *')
     }
 
     stages {
