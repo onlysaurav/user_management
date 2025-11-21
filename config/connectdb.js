@@ -1,14 +1,19 @@
 import mongoose from "mongoose";
-import UserModel from "../models/user.js";
-const connectDB = async(DATABASE_URL) => {
+const connectDB =  async ()=>{
+
     try{
-        const DB_OPTIONS = {
-            
-        }
-        await mongoose.connect(DATABASE_URL, DB_OPTIONS)
-        console.log('Connected Successfully!...');
+        const conn = await mongoose.connect(process.env.MONGO_URL,{
+            //must add in order to not get any error masseges:
+            useUnifiedTopology:true,
+            useNewUrlParser: true
+        })
+        console.log(`mongo database is connected!!! ${conn.connection.host} `)
+        mongoose.set('debug', true)
     }catch(error){
-        console.log(error)
+        console.error(`Error: ${error} `)
+        process.exit(1) //passing 1 - will exit the proccess with error
     }
+
 }
+
 export default connectDB;
