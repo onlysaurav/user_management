@@ -1,24 +1,23 @@
 import dotenv from "dotenv";
 dotenv.config();
-import express from "express";
-import cors from "cors";
-import connectDB from "./config/connectdb.js"
-import userRoutes from "./routes/userRoutes.js"
-const app = express();
-const port = process.env.PORT
-const DATABASE_URL = process.env.MONGO_URL
-// CORS Policy
-app.use(cors())
 
-//DATABASE CONNECCTION
-connectDB(DATABASE_URL);
+import mongoose from "mongoose";
+import app from "./app.js";
 
-//JSON
-app.use(express.json())
+const PORT = process.env.PORT || 4000;
+const MONGO_URI = process.env.MONGO_URL;
 
-//Load Routes
-app.use("/api/user", userRoutes )
+(async () => {
+  try {
+    await mongoose.connect(MONGO_URI);
+    console.log("MongoDB connected");
 
-app.listen(port, () => {
-    console.log(`Server is listening at http://localhost:${port}`); 
-})
+    app.listen(PORT, () => {
+      console.log(`Server running at http://localhost:${PORT}`);
+    });
+
+  } catch (err) {
+    console.error("DB Connection Failed:", err);
+    process.exit(1);
+  }
+})();
