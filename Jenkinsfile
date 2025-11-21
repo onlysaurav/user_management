@@ -1,8 +1,8 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs "Node_20"
+    environment {
+        PATH = "/opt/homebrew/opt/node@20/bin:${PATH}"
     }
 
     triggers {
