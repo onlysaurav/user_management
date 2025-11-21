@@ -4,11 +4,13 @@ dotenv.config();
 import mongoose from "mongoose";
 import app from "./app.js";
 
-const PORT = process.env.PORT ?? 4000;
-const MONGO_URI = process.env.MONGO_URL ?? 'mongodb+srv://heroviredsaurabh1325_db_user:a0FwrpO4DbJL2ZGp@heroviredsaurabhcluster.o7yzksc.mongodb.net/User_Db';
+
 
 (async () => {
   try {
+
+    const PORT = process.env.PORT || 4000;
+    const MONGO_URI = process.env.MONGO_URL || 'mongodb+srv://heroviredsaurabh1325_db_user:a0FwrpO4DbJL2ZGp@heroviredsaurabhcluster.o7yzksc.mongodb.net/User_Db';
     await mongoose.connect(MONGO_URI);
     console.log("MongoDB connected");
 
