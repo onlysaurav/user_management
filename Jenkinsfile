@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs "Node_20"
+    }
+
     triggers {
         pollSCM('* * * * *')
     }
@@ -21,7 +25,7 @@ pipeline {
         }
 
         stage('Install Dependencies') {
-            steps {
+            steps { 
                 sh 'npm install'
             }
         }
