@@ -6,14 +6,20 @@ pipeline {
     }
 
     triggers {
-        pollSCM('* * * * *')   // Poll GitHub every 1 minute
+        pollSCM('* * * * *')
+    }
+
+    environment {
+        EC2_USER = "ec2-user"
+        EC2_IP = "18.169.105.246"
+        EC2_PATH = "/var/www/userapp"
     }
 
     stages {
 
         stage('Checkout') {
             steps {
-                git branch: 'master',
+                git branch: 'main',
                     url: 'https://github.com/onlysaurav/user_management.git'
             }
         }
@@ -30,22 +36,25 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                echo "No build step required for Node.js API"
-            }
-        }
-
-        stage('Deploy to Staging') {
+        stage('Deploy to EC2') {
             when {
                 expression { currentBuild.currentResult == "SUCCESS" }
             }
             steps {
-                sh '''
-                    echo "Deploying application..."
-                    pm2 stop userapp || true
-                    pm2 start server.js --name userapp
-                '''
+                script {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_IP} "mkdir -p ${EC2_PATH}"
+
+                        scp -o StrictHostKeyChecking=no -r * ${EC2_USER}@${EC2_IP}:${EC2_PATH}
+
+                        ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_IP} "
+                            cd ${EC2_PATH} &&
+                            npm install &&
+                            pm2 stop userapp || true &&
+                            pm2 start server.js --name userapp
+                        "
+                    """
+                }
             }
         }
     }
@@ -53,15 +62,16 @@ pipeline {
     post {
         success {
             emailext (
-                subject: "SUCCESS: Jenkins Pipeline Passed",
-                body: "The Jenkins pipeline completed successfully.",
+                subject: "SUCCESS: Node.js CI/CD Pipeline Passed",
+                body: "Build + Tests + Deployment succeeded.",
                 to: "tiwarisaurabh706@gmail.com"
             )
         }
+
         failure {
             emailext (
-                subject: "FAILED: Jenkins Pipeline Failed",
-                body: "The Jenkins pipeline has failed. Check Jenkins logs.",
+                subject: "FAILED: Node.js CI/CD Pipeline Failed",
+                body: "Build or deployment error. Check Jenkins logs.",
                 to: "tiwarisaurabh706@gmail.com"
             )
         }
