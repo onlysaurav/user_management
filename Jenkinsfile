@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs "Node_18"
-    }
-
     triggers {
         pollSCM('* * * * *')
     }
@@ -26,6 +22,8 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
+                sh 'node -v'
+                sh 'npm -v'
                 sh 'npm install'
             }
         }
