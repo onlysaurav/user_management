@@ -3,9 +3,9 @@ pipeline {
 
     environment {
         PATH = "/opt/homebrew/opt/node@20/bin:${PATH}"
-        EC2_USER = "ec2-user"
-        EC2_IP = "18.169.105.246"
-        EC2_PATH = "/var/www/userapp"
+        EC2_USER = 'ec2-user'
+        EC2_IP = '18.169.105.246'
+        EC2_PATH = '/var/www/userapp'
     }
 
     triggers {
@@ -13,7 +13,6 @@ pipeline {
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 git branch: 'master',
@@ -22,7 +21,7 @@ pipeline {
         }
 
         stage('Install Dependencies') {
-            steps { 
+            steps {
                 sh 'npm install'
             }
         }
@@ -35,11 +34,11 @@ pipeline {
 
         stage('Deploy to EC2') {
             options {
-                timeout(time: 3, unit: 'HOURS')   // timeout on whole pipeline job
+                timeout(time: 1, unit: 'HOURS')   // timeout on whole pipeline job
             }
 
             when {
-                expression { currentBuild.currentResult == "SUCCESS" }
+                expression { currentBuild.currentResult == 'SUCCESS' }
             }
             steps {
                 script {
@@ -62,18 +61,18 @@ pipeline {
 
     post {
         success {
-            emailext (
-                subject: "SUCCESS: Node.js CI/CD Pipeline Passed",
-                body: "Build + Tests + Deployment succeeded.",
-                to: "tiwarisaurabh706@gmail.com"
+            emailext(
+                subject: 'SUCCESS: Node.js CI/CD Pipeline Passed',
+                body: 'Build + Tests + Deployment succeeded.',
+                to: 'tiwarisaurabh706@gmail.com'
             )
         }
 
         failure {
-            emailext (
-                subject: "FAILED: Node.js CI/CD Pipeline Failed",
-                body: "Build or deployment error. Check Jenkins logs.",
-                to: "tiwarisaurabh706@gmail.com"
+            emailext(
+                subject: 'FAILED: Node.js CI/CD Pipeline Failed',
+                body: 'Build or deployment error. Check Jenkins logs.',
+                to: 'tiwarisaurabh706@gmail.com'
             )
         }
     }
