@@ -35,7 +35,7 @@ pipeline {
 
         stage('Deploy to EC2') {
             options {
-                timeout(time: 1, unit: 'HOURS')   // timeout on whole pipeline job
+                timeout(time: 3, unit: 'HOURS')   // timeout on whole pipeline job
             }
 
             when {
