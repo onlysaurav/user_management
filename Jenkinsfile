@@ -2,17 +2,16 @@ pipeline {
     agent any
 
     environment {
-        PATH = "/opt/homebrew/opt/node@20/bin:${PATH}"
-        EC2_USER = 'ec2-user'
-        EC2_IP = '18.132.211.164'
-        EC2_PATH = '/var/www/userapp'
-    }
+        NODE_HOME = "/opt/homebrew/opt/node@20/bin"
+        PATH = "${NODE_HOME}:${PATH}"
 
-    triggers {
-        pollSCM('* * * * *')
+        EC2_USER = "ec2-user"
+        EC2_HOST = "18.132.211.164"
+        EC2_PATH = "/var/www/userapp"
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 git branch: 'master',
@@ -32,27 +31,30 @@ pipeline {
             }
         }
 
-        stage('Deploy to EC2') {
-            options {
-                timeout(time: 3, unit: 'HOURS')   // timeout on whole pipeline job
-            }
-
-            when {
-                expression { currentBuild.currentResult == 'SUCCESS' }
-            }
+        stage('Build') {
             steps {
-                script {
+                sh 'npm run build || echo "No build step configured"'
+            }
+        }
+
+        stage('Deploy to EC2') {
+            steps {
+                sshagent(credentials: ['ec2-ssh-key']) {
+
                     sh """
-                        ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_IP} "mkdir -p ${EC2_PATH} && sudo chown -R ec2-user:ec2-user /var/www/userapp"
+                        ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} 'mkdir -p ${EC2_PATH} && sudo chown -R ${EC2_USER}:${EC2_USER} ${EC2_PATH}'
+                    """
 
-                        scp -o StrictHostKeyChecking=no -r * ${EC2_USER}@${EC2_IP}:${EC2_PATH}
+                    sh """
+                        scp -o StrictHostKeyChecking=no -r ./* ${EC2_USER}@${EC2_HOST}:${EC2_PATH}
+                    """
 
-                        ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_IP} "
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} '
                             cd ${EC2_PATH} &&
-                            npm install &&
-                            pm2 stop userapp || true &&
-                            pm2 start server.js --name userapp
-                        "
+                            npm install --production &&
+                            pm2 restart all || pm2 start server.js --name userapp
+                        '
                     """
                 }
             }
@@ -61,19 +63,15 @@ pipeline {
 
     post {
         success {
-            emailext(
-                subject: 'SUCCESS: Node.js CI/CD Pipeline Passed',
-                body: 'Build + Tests + Deployment succeeded.',
-                to: 'tiwarisaurabh706@gmail.com'
-            )
+            mail to: 'tiwarisaurabh706@gmail.com',
+                 subject: "Jenkins Job SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "The build completed successfully.\n\nLogs: ${env.BUILD_URL}"
         }
 
         failure {
-            emailext(
-                subject: 'FAILED: Node.js CI/CD Pipeline Failed',
-                body: 'Build or deployment error. Check Jenkins logs.',
-                to: 'tiwarisaurabh706@gmail.com'
-            )
+            mail to: 'tiwarisaurabh706@gmail.com',
+                 subject: "Jenkins Job FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "The build has FAILED.\n\nLogs: ${env.BUILD_URL}"
         }
     }
 }
