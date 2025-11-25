@@ -62,17 +62,17 @@ pipeline {
         }
     }
 
-    post {
-        success {
-            mail to: 'tiwarisaurabh706@gmail.com',
-                 subject: "Jenkins Job SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                 body: "The build completed successfully.\n\nLogs: ${env.BUILD_URL}"
-        }
+    // post {
+    //     success {
+    //         mail to: 'tiwarisaurabh706@gmail.com',
+    //              subject: "Jenkins Job SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+    //              body: "The build completed successfully.\n\nLogs: ${env.BUILD_URL}"
+    //     }
 
-        failure {
-            mail to: 'tiwarisaurabh706@gmail.com',
-                 subject: "Jenkins Job FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                 body: "The build has FAILED.\n\nLogs: ${env.BUILD_URL}"
-        }
-    }
+    //     failure {
+    //         mail to: 'tiwarisaurabh706@gmail.com',
+    //              subject: "Jenkins Job FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+    //              body: "The build has FAILED.\n\nLogs: ${env.BUILD_URL}"
+    //     }
+    // }
 }
