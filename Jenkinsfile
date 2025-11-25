@@ -39,7 +39,8 @@ pipeline {
 
         stage('Deploy to EC2') {
             steps {
-                sshagent(credentials: ['ec2-ssh-key']) {
+                withCredentials([sshUserPrivateKey(credentialsId: 'ec2-ssh-key', 
+                    keyFileVariable: 'SSH_KEY')]) {
 
                     sh """
                         ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} 'mkdir -p ${EC2_PATH} && sudo chown -R ${EC2_USER}:${EC2_USER} ${EC2_PATH}'
