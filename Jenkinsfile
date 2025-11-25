@@ -43,6 +43,8 @@ pipeline {
                     keyFileVariable: 'SSH_KEY')]) {
 
                     // echo "🔐 Using SSH key located at: $SSH_KEY"
+                    // Clean workspace before copying
+                    sh 'rm -rf node_modules'
 
                     sh """
                         ssh -i $SSH_KEY -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} \
