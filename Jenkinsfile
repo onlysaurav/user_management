@@ -38,32 +38,35 @@ pipeline {
         }
 
         stage('Deploy to EC2') {
-            steps {
-                withCredentials([sshUserPrivateKey(credentialsId: 'ec2-ssh-key', 
-                    keyFileVariable: 'SSH_KEY')]) {
+    steps {
+        withCredentials([sshUserPrivateKey(credentialsId: 'ec2-ssh-key', 
+            keyFileVariable: 'SSH_KEY')]) {
 
-                    sh """
-                        ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} 'mkdir -p ${EC2_PATH} && sudo chown -R ${EC2_USER}:${EC2_USER} ${EC2_PATH}'
-                    """
+            sh """
+                ssh -i $SSH_KEY -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} \
+                'mkdir -p ${EC2_PATH} && sudo chown -R ${EC2_USER}:${EC2_USER} ${EC2_PATH}'
+            """
 
-                    sh """
-                        scp -o StrictHostKeyChecking=no -r ./* ${EC2_USER}@${EC2_HOST}:${EC2_PATH}
-                    """
+            sh """
+                scp -i $SSH_KEY -o StrictHostKeyChecking=no -r ./* ${EC2_USER}@${EC2_HOST}:${EC2_PATH}
+            """
 
-                    sh """
-                        ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} '
-                            cd ${EC2_PATH} &&
-                            npm install --production || { echo "NPM INSTALL FAILED"; exit 1; }
-                            if pm2 list | grep -q userapp; then
-                                pm2 restart userapp;
-                            else
-                                pm2 start server.js --name userapp;
-                            fi
-                        '
-                    """
-                }
-            }
+            sh """
+                ssh -i $SSH_KEY -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} '
+                    cd ${EC2_PATH} &&
+                    npm install --production || { echo "NPM INSTALL FAILED"; exit 1; }
+
+                    if pm2 list | grep -q userapp; then
+                        pm2 restart userapp;
+                    else
+                        pm2 start server.js --name userapp;
+                    fi
+                '
+            """
         }
+    }
+}
+
     }
 
     // post {
