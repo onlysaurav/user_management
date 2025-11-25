@@ -19,12 +19,6 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                sh 'npm install'
-            }
-        }
-
         stage('Run Tests') {
             steps {
                 sh 'npm test'
@@ -42,7 +36,7 @@ pipeline {
                 withCredentials([sshUserPrivateKey(credentialsId: 'ec2-ssh-key',
                     keyFileVariable: 'SSH_KEY')]) {
 
-                    echo "🔐 Using SSH key located at: $SSH_KEY"
+                    // echo "🔐 Using SSH key located at: $SSH_KEY"
 
                     sh """
                         ssh -i $SSH_KEY -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} \
@@ -75,7 +69,6 @@ pipeline {
             }
         }
     }
-
     post {
         success {
             mail to: 'tiwarisaurabh706@gmail.com',
