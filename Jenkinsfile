@@ -53,8 +53,12 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} '
                             cd ${EC2_PATH} &&
-                            npm install --production &&
-                            pm2 restart all || pm2 start server.js --name userapp
+                            npm install --production || { echo "NPM INSTALL FAILED"; exit 1; }
+                            if pm2 list | grep -q userapp; then
+                                pm2 restart userapp;
+                            else
+                                pm2 start server.js --name userapp;
+                            fi
                         '
                     """
                 }
