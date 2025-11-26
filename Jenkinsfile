@@ -77,17 +77,17 @@ pipeline {
             }
         }
     }
-    post {
-        success {
-            mail to: 'tiwarisaurabh706@gmail.com',
-                 subject: "SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                 body: "Deployment completed successfully.\n\nBuild logs: ${env.BUILD_URL}"
-        }
+    // post {
+    //     success {
+    //         mail to: 'tiwarisaurabh706@gmail.com',
+    //              subject: "SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+    //              body: "Deployment completed successfully.\n\nBuild logs: ${env.BUILD_URL}"
+    //     }
 
-        failure {
-            mail to: 'tiwarisaurabh706@gmail.com',
-                 subject: "FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                 body: "Build or Deployment failed.\n\nCheck logs: ${env.BUILD_URL}"
-        }
-    }
+    //     failure {
+    //         mail to: 'tiwarisaurabh706@gmail.com',
+    //              subject: "FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+    //              body: "Build or Deployment failed.\n\nCheck logs: ${env.BUILD_URL}"
+    //     }
+    // }
 }
